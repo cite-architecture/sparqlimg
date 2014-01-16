@@ -6,6 +6,9 @@ apply plugin: 'jetty'
 apply plugin: 'groovy'
 apply plugin: 'maven'
 
+apply from: "versions.gradle"
+
+
 group = "edu.holycross.shot"
 version = "0.3.2"
 
@@ -49,21 +52,6 @@ stopPort = 9451
 stopKey = 'foo'
 
 
-
-
-
-// Version strings:
-String groovyVersion = "2.0.6"
-String citeVersion = "0.12.19"
-
-String commonsioVersion = "1.4"
-String log4jVersion = "1.2.15"
-
-String httpbuilderVersion = "0.5.2"
-
-String junitVersion = "4.8.2"
-String xmlunitVersion = "1.3"
-String icu4jVersion = "3.4.4"
 
 repositories {
     mavenCentral()
@@ -127,7 +115,7 @@ task buildTemplate(type: Zip, dependsOn: [copyBuildPkg, copyWeb] ) {
 
 
 war {
-    filter(ReplaceTokens, tokens: [sparqls: sparqls, iipsrv : iipsrv, defaultUrn : "urn:cite:ecod:codbod8.cb-0008_001r", serviceUrl : "api?", detailWidth: "9000"])
+    filter(ReplaceTokens, tokens: [sparqls: sparqls, iipsrv : iipsrv, defaultUrn : defaultUrn, serviceUrl : serviceUrl, detailWidth: detailWidth ])
 
     classpath sourceSets.main.output.classesDir
     classpath configurations.runtime
