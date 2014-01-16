@@ -1,0 +1,149 @@
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+apply plugin: 'war'
+apply plugin: 'jetty'
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+group = "edu.holycross.shot"
+version = "0.3.2"
+
+
+
+// Consider possible configurations:
+if (hasProperty('conf')) {
+    System.err.print "Using configuration data from ${conf}"
+    File confFile = new File(conf)
+    if (! confFile.exists()) {
+        throw new Exception("No configuration file ${conf} found.")
+    }
+    apply from: conf
+
+} else {
+    File confFile = new File("conf.gradle")
+    if (! confFile.exists()) {
+        throw new Exception("No configuration file ${conf} found.")
+    }
+    println "Using default configuration in 'conf.gradle'"
+    apply from: "conf.gradle"
+}
+
+
+// Configuration of nexus authentication
+if (hasProperty('pub')) {
+    System.err.print "Using publication configuration from ${pub}"
+    File pubConf = new File(pub)
+    if (! pubConf.exists()) {
+        throw new Exception("No configuration file ${pub} found.")
+    }
+    apply from: pub
+} else {
+    // default setting with null string values
+    apply from: "pub.gradle"
+}
+
+
+httpPort = 8888
+stopPort = 9451
+stopKey = 'foo'
+
+
+
+
+
+// Version strings:
+String groovyVersion = "2.0.6"
+String citeVersion = "0.12.19"
+
+String commonsioVersion = "1.4"
+String log4jVersion = "1.2.15"
+
+String httpbuilderVersion = "0.5.2"
+
+String junitVersion = "4.8.2"
+String xmlunitVersion = "1.3"
+String icu4jVersion = "3.4.4"
+
+repositories {
+    mavenCentral()
+    // for http builder:
+    maven {
+        url "http://repository.codehaus.org"
+    }
+    // for cite libs:
+    maven {
+        url "http://beta.hpcc.uh.edu/nexus/content/groups/public"
+    }
+    // for IBM Normalizer
+    maven {
+        url "https://oss.sonatype.org/content/repositories/releases"
+    }
+}
+
+configurations {
+    publib
+}
+
+dependencies {
+    groovy  group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
+
+    compile group: 'commons-io', name: 'commons-io', version: commonsioVersion
+
+    compile ("log4j:log4j:${log4jVersion}") {
+        exclude group: "com.sun.jdmk", module: "jmxtools"
+        exclude group: "com.sun.jmx", module: "jmxri"
+        exclude group: "javax.mail", module: "mail"
+        exclude group: "javax.jms", module: "jms"
+    }
+
+    compile group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: httpbuilderVersion
+    compile group: 'edu.harvard.chs', name : 'cite' , version: citeVersion
+
+    runtime group: 'edu.harvard.chs', name : 'cite' , version: citeVersion
+
+    testCompile group: 'junit', name: 'junit', version: junitVersion
+    testCompile group :'xmlunit', name: 'xmlunit', version: xmlunitVersion
+    testCompile group: 'com.ibm.icu', name: 'icu4j', version: icu4jVersion
+}
+
+
+task copyBuildPkg(type: Copy) {
+    from "pkg"
+    into "${buildDir}/sparqlimg-template"
+    filter(ReplaceTokens, tokens: [sparqlimgversion : version])
+}
+
+task copyWeb(type: Copy) {
+    from "src/main/webapp"
+    into "${buildDir}/sparqlimg-template/src/main/webapp"
+}
+
+
+task buildTemplate(type: Zip, dependsOn: [copyBuildPkg, copyWeb] ) {
+    classifier = "template"
+    from "${buildDir}/sparqlimg-template"
+}
+
+
+war {
+    filter(ReplaceTokens, tokens: [sparqls: sparqls, iipsrv : iipsrv, defaultUrn : "urn:cite:ecod:codbod8.cb-0008_001r", serviceUrl : "api?", detailWidth: "9000"])
+
+    classpath sourceSets.main.output.classesDir
+    classpath configurations.runtime
+}
+
+artifacts {
+    publib jar
+}
+
+
+uploadPublib {
+  repositories.mavenDeployer {
+        repository(url: nexusRepo) {                   
+            authentication (userName: nexusUser, password: nexusPassword)
+        }
+    }
+}
+
+uploadPublib.onlyIf { (project.hasProperty('nexusRepo') && project.hasProperty('nexusUser') && project.hasProperty('nexusPassword'))}

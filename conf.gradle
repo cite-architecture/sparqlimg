@@ -1,0 +1,12 @@
+/* Configuration for sparqlimg
+*/
+
+
+project.ext {
+    // Absolute or relative URL of IIPSrv fast cgi.
+    iipsrv = "http://beta.hpcc.uh.edu/fcgi-bin/iipsrv.fcgi"
+
+    // SPARQL endpoint.
+    sparqls  = "http://localhost:3030/ds/"
+
+}
