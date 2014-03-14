@@ -243,8 +243,8 @@ class CiteImage {
         if (acceptType == "application/json") {
             q +="&output=json"
         }
-        try {
-            def http = new HTTPBuilder(q)
+        /*try {
+            HTTPBuilder http = new HTTPBuilder(q)
             http.request( Method.GET, ContentType.TEXT ) { req ->
                 headers.Accept = acceptType
                 response.success = { resp, reader ->
@@ -255,7 +255,15 @@ class CiteImage {
             System.err.println "getSparqlRply: failed to get reply for query ${q}."
             throw new Exception ("CiteImage:getSparqlReply: failed to get reply for ${q}.  Exception ${e}")
         }
+		finally
+		{
+			http.shutdown()
+		}
         return replyString
+		*/
+		URL queryUrl = new URL(q)
+        return queryUrl.getText("UTF-8")
+
     }
 
 
