@@ -1,4 +1,4 @@
-def demoUrn = "urn:cite:ecod:codbod8.cb-0008_001r"
+def demoUrn = "urn:cite:hmt:vaimg.VA012RND-0892"
        
 html.html {
     head {

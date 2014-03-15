@@ -7,7 +7,7 @@ project.ext {
     iipsrv = "http://beta.hpcc.uh.edu/fcgi-bin/iipsrv.fcgi"
 
     // SPARQL endpoint.
-    sparqls  = "http://localhost:3030/ds/"
+    sparqls  = "http://localhost:3030/hmt/"
 
 	// Default URN
 	defaultUrn = "urn:cite:hmt.vaimg.VA0012RN-0013"

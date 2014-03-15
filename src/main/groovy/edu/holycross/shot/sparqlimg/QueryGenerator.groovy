@@ -25,9 +25,8 @@ prefix cite:        <http://www.homermultitext.org/cite/rdf/>
         return """${prefix}
 
         SELECT ?path WHERE {
-           ?img cite:belongsTo ?coll .
+           <${img}> cite:belongsTo ?coll .
            ?coll hmt:path ?path .
-           FILTER (str(?img) = "${img}" )  .
          }
          """
     }
@@ -35,9 +34,8 @@ prefix cite:        <http://www.homermultitext.org/cite/rdf/>
     String getImageInfo(CiteUrn img) {
         return """${prefix}
        SELECT ?caption ?license WHERE {
-        ?img rdf:label ?caption .
-        ?img cite:license ?license .
-        FILTER(str(?img) = "${img}") .
+        <${img}> rdf:label ?caption .
+        <${img}> cite:license ?license .
         }
         """
     }
