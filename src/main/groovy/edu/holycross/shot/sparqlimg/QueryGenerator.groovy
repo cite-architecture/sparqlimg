@@ -13,6 +13,7 @@ class QueryGenerator {
     String prefix = """prefix hmt:        <http://www.homermultitext.org/hmt/rdf/>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix cite:        <http://www.homermultitext.org/cite/rdf/> 
+prefix citedata:         <http://www.homermultitext.org/hmt/citedata/> 
 """
 
     /** Empty constructor.*/
@@ -31,11 +32,29 @@ prefix cite:        <http://www.homermultitext.org/cite/rdf/>
          """
     }
 
-    String getImageInfo(CiteUrn img) {
+    String getRightsProp(CiteUrn img) {
+        return """${prefix}
+       SELECT ?prop WHERE {
+        <${img}> cite:belongsTo ?collection .
+        ?collection hmt:imageRightsProperty ?prop .
+        }
+        """
+    }
+
+    String getCaptionProp(CiteUrn img) {
+        return """${prefix}
+       SELECT ?prop WHERE {
+        <${img}> cite:belongsTo ?collection .
+        ?collection hmt:imageCaptionProperty ?prop .
+        }
+        """
+    }
+
+    String getImageInfo(CiteUrn img, String captionVerb, String rightsVerb) {
         return """${prefix}
        SELECT ?caption ?license WHERE {
-        <${img}> rdf:label ?caption .
-        <${img}> cite:license ?license .
+        <${img}> ${captionVerb} ?caption .
+        <${img}> ${rightsVerb} ?license .
         }
         """
     }

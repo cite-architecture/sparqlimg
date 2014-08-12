@@ -61,10 +61,12 @@ class CiteImage {
     * @returns A valid reply to the CiteImage GetCaption request.
     */
     String getCaptionReply(CiteUrn urn) {
+        String rightsVerb = getRightsProp(urn.toString())
+        String captionVerb = getCaptionProp(urn.toString())
         CiteUrn baseUrn = new CiteUrn("urn:cite:${urn.getNs()}:${urn.getCollection()}.${urn.getObjectId()}")
         StringBuffer reply = new StringBuffer("<GetCaption xmlns='http://chs.harvard.edu/xmlns/citeimg'>\n")
         reply.append("<request>\n<urn>${urn}</urn>\n</request>\n<reply>\n")
-        String q = qg.getImageInfo(baseUrn)
+        String q = qg.getImageInfo(baseUrn, captionVerb, rightsVerb)
 	if (debug > 0) {
 	  System.err.println "CiteImage: query = ${q}"
 	}
@@ -79,7 +81,49 @@ class CiteImage {
     }
 
 
+    /**
+    * Composes a string that represents the TTL verb
+    * for grabbing the Rights property of an image-collection-object
+    * @param urnStr URN, as a String, of the image.
+    * @returns a namespaced RDF verb.
+    */
+    String getRightsProp(String urnStr) 
+    throws Exception {
+        CiteUrn urn = new CiteUrn(urnStr)
+		CiteUrn baseUrn = new CiteUrn("urn:cite:${urn.getNs()}:${urn.getCollection()}.${urn.getObjectId()}")
+        String rightsPropReply =  getSparqlReply("application/json", qg.getRightsProp(baseUrn))
+        def slurper = new groovy.json.JsonSlurper()
+        def parsedReply = slurper.parseText(rightsPropReply)
+        String prop = ""
+        parsedReply.results.bindings.each { b ->
+            prop = b?.prop.value
+        }
+        String verb = "citedata:"
+        verb += prop
+        return verb 
+    }
 
+    /**
+    * Composes a string that represents the TTL verb
+    * for grabbing the Caption property of an image-collection-object
+    * @param urnStr URN, as a String, of the image.
+    * @returns a namespaced RDF verb.
+    */
+    String getCaptionProp(String urnStr) 
+    throws Exception {
+        CiteUrn urn = new CiteUrn(urnStr)
+		CiteUrn baseUrn = new CiteUrn("urn:cite:${urn.getNs()}:${urn.getCollection()}.${urn.getObjectId()}")
+        String captionPropReply =  getSparqlReply("application/json", qg.getCaptionProp(baseUrn))
+        def slurper = new groovy.json.JsonSlurper()
+        def parsedReply = slurper.parseText(captionPropReply)
+        String prop = ""
+        parsedReply.results.bindings.each { b ->
+            prop = b?.prop.value
+        }
+        String verb = "citedata:"
+        verb += prop
+        return verb 
+    }
 
     /**
     * Composes a String validating against the .rng schema for the GetRights reply.
@@ -99,10 +143,12 @@ class CiteImage {
     * @returns A valid reply to the CiteImage GetRights request.
     */
     String getRightsReply(CiteUrn urn){ 
+        String rightsVerb = getRightsProp(urn.toString())
+        String captionVerb = getCaptionProp(urn.toString())
 		CiteUrn baseUrn = new CiteUrn("urn:cite:${urn.getNs()}:${urn.getCollection()}.${urn.getObjectId()}")
         StringBuffer reply = new StringBuffer("<GetRights xmlns='http://chs.harvard.edu/xmlns/citeimg'>\n")
         reply.append("<request>\n<urn>${urn}</urn>\n</request>\n<reply>\n")
-        String imgReply =  getSparqlReply("application/json", qg.getImageInfo(baseUrn))
+        String imgReply =  getSparqlReply("application/json", qg.getImageInfo(baseUrn, captionVerb, rightsVerb))
         def slurper = new groovy.json.JsonSlurper()
         def parsedReply = slurper.parseText(imgReply)
         parsedReply.results.bindings.each { b ->
@@ -151,7 +197,9 @@ class CiteImage {
         String caption
         String path
 
-        String imgReply =  getSparqlReply("application/json", qg.getImageInfo(baseUrn))
+        String rightsVerb = getRightsProp(urn.toString())
+        String captionVerb = getCaptionProp(urn.toString())
+        String imgReply =  getSparqlReply("application/json", qg.getImageInfo(baseUrn, captionVerb, rightsVerb))
         def slurper = new groovy.json.JsonSlurper()
         def parsedReply = slurper.parseText(imgReply)
         parsedReply.results.bindings.each { b ->
@@ -187,9 +235,11 @@ class CiteImage {
         String binaryUrl = "${baseUrl}request=GetBinaryImage&amp;urn=${urn}"
         String zoomableUrl =  "${baseUrl}request=GetIIPMooViewer&amp;urn=${urn}"
 
+        String rightsVerb = getRightsProp(urn.toString())
+        String captionVerb = getCaptionProp(urn.toString())
         String caption
         String rights
-        String q = qg.getImageInfo(baseUrn)
+        String q = qg.getImageInfo(baseUrn, captionVerb, rightsVerb)
         System.err.println "QUERY " + q
         String imgReply =  getSparqlReply("application/json", q)
         def slurper = new groovy.json.JsonSlurper()
@@ -243,24 +293,6 @@ class CiteImage {
         if (acceptType == "application/json") {
             q +="&output=json"
         }
-        /*try {
-            HTTPBuilder http = new HTTPBuilder(q)
-            http.request( Method.GET, ContentType.TEXT ) { req ->
-                headers.Accept = acceptType
-                response.success = { resp, reader ->
-                    replyString = reader.text
-                }
-            }
-        } catch (Exception e) {
-            System.err.println "getSparqlRply: failed to get reply for query ${q}."
-            throw new Exception ("CiteImage:getSparqlReply: failed to get reply for ${q}.  Exception ${e}")
-        }
-		finally
-		{
-			http.shutdown()
-		}
-        return replyString
-		*/
 		URL queryUrl = new URL(q)
         return queryUrl.getText("UTF-8")
 

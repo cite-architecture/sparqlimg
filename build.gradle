@@ -125,6 +125,11 @@ artifacts {
     publib jar
 }
 
+test {
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
+}
 
 uploadPublib {
   repositories.mavenDeployer {
