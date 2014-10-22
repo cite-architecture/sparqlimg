@@ -10,7 +10,7 @@ apply from: "versions.gradle"
 
 
 group = "edu.holycross.shot"
-version = "0.3.3"
+version = "0.5.1"
 
 
 
@@ -127,6 +127,11 @@ artifacts {
     publib jar
 }
 
+test {
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
+}
 
 uploadPublib {
   repositories.mavenDeployer {
