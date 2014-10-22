@@ -56,9 +56,11 @@ stopKey = 'foo'
 repositories {
     mavenCentral()
     // for http builder:
-    maven {
+    /*    maven {
         url "http://repository.codehaus.org"
-    }
+	}*/
+
+
     // for cite libs:
     maven {
         url "http://beta.hpcc.uh.edu/nexus/content/groups/public"
@@ -74,7 +76,7 @@ configurations {
 }
 
 dependencies {
-    groovy  group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
+    compile  group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
 
     compile group: 'commons-io', name: 'commons-io', version: commonsioVersion
 
@@ -85,7 +87,7 @@ dependencies {
         exclude group: "javax.jms", module: "jms"
     }
 
-    compile group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: httpbuilderVersion
+    //compile group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: httpbuilderVersion
     compile group: 'edu.harvard.chs', name : 'cite' , version: citeVersion
 
     runtime group: 'edu.harvard.chs', name : 'cite' , version: citeVersion

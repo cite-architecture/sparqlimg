@@ -21,6 +21,9 @@ class TestRequests extends GroovyTestCase {
         CiteImage chsi = new CiteImage(serverUrl, iipsrv)
 
         String expectedCaption = "Cologny, Fondation Martin Bodmer, Cod. Bodmer 8, folio 1 recto."
+
+
+
         def root = new XmlParser().parseText(chsi.getCaptionReply(tstImg))
         String actualCaption
         System.err.println "img reply = " + root

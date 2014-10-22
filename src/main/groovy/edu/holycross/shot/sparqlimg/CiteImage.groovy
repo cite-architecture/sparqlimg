@@ -2,12 +2,12 @@ package edu.holycross.shot.sparqlimg
 
 import edu.harvard.chs.cite.CiteUrn
 
-
+/*
 import groovyx.net.http.*
 import groovyx.net.http.HttpResponseException
 import static groovyx.net.http.ContentType.*
 import static groovyx.net.http.Method.*
-
+*/
 
 
 
@@ -18,41 +18,45 @@ import static groovyx.net.http.Method.*
 class CiteImage {
 
 
-  Integer debug = 0
+  Integer debug = 1
 
 
-    /** String value of URL for IIPSrv fast cgi. */
-    String iipsrv
+  /** String value of URL for IIPSrv fast cgi. */
+  String iipsrv
 
-    /** SPARQL query endpoint for HMT graph triples.   */
-    String tripletServerUrl
+  /** SPARQL query endpoint for HMT graph triples.   */
+  String tripletServerUrl
 
-    /** QueryGenerator object formulating SPARQL query strings. */
-    QueryGenerator qg
+  /** QueryGenerator object formulating SPARQL query strings. */
+  QueryGenerator qg
 
 
-    /** Constructor initializing required values
-    * @param serverUrl String value for URL of sparql endpoint to query.
-    * @param fcgiUrl String value for URL of IIPSrv fast cgi.
-.   */
-    CiteImage(String serverUrl, String fcgiUrl) {
-        this.tripletServerUrl = serverUrl
-        this.iipsrv = fcgiUrl
-        this.qg = new QueryGenerator()
+  /** Constructor initializing required values
+   * @param serverUrl String value for URL of sparql endpoint to query.
+   * @param fcgiUrl String value for URL of IIPSrv fast cgi.
+   .   */
+  CiteImage(String serverUrl, String fcgiUrl) {
+    this.tripletServerUrl = serverUrl
+    this.iipsrv = fcgiUrl
+    this.qg = new QueryGenerator()
+  }
+
+
+  /**
+   * Composes a String validating against the .rng schema for the GetCaption reply.
+   * @param urnStr URN, as a String, of image.
+   * @returns A valid reply to the CiteImage GetCaption request.
+   */
+  String getCaptionReply(String urnStr) 
+  throws Exception {
+    CiteUrn urn = new CiteUrn(urnStr)
+    CiteUrn baseUrn = new CiteUrn("urn:cite:${urn.getNs()}:${urn.getCollection()}.${urn.getObjectId()}")
+
+    if (debug > 0) {
+      System.err.println("====>getCaptionReply: \n\n" + getCaptionReply(baseUrn) + "\n\n")
     }
-
-
-    /**
-    * Composes a String validating against the .rng schema for the GetCaption reply.
-    * @param urnStr URN, as a String, of image.
-    * @returns A valid reply to the CiteImage GetCaption request.
-    */
-    String getCaptionReply(String urnStr) 
-    throws Exception {
-        CiteUrn urn = new CiteUrn(urnStr)
-        CiteUrn baseUrn = new CiteUrn("urn:cite:${urn.getNs()}:${urn.getCollection()}.${urn.getObjectId()}")
-        return getCaptionReply(baseUrn)
-    }
+    return getCaptionReply(baseUrn)
+  }
 
 
     /**
