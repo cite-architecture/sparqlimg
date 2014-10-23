@@ -13,7 +13,7 @@ class QueryGenerator {
     String prefix = """prefix hmt:        <http://www.homermultitext.org/hmt/rdf/>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix cite:        <http://www.homermultitext.org/cite/rdf/> 
-prefix citedata:         <http://www.homermultitext.org/hmt/citedata/> 
+prefix citedata:         <http://www.homermultitext.org/citedata/rdf/> 
 """
 
     /** Empty constructor.*/

@@ -115,18 +115,18 @@ class CiteImage {
     */
     String getCaptionProp(String urnStr) 
     throws Exception {
-        CiteUrn urn = new CiteUrn(urnStr)
-		CiteUrn baseUrn = new CiteUrn("urn:cite:${urn.getNs()}:${urn.getCollection()}.${urn.getObjectId()}")
-        String captionPropReply =  getSparqlReply("application/json", qg.getCaptionProp(baseUrn))
-        def slurper = new groovy.json.JsonSlurper()
-        def parsedReply = slurper.parseText(captionPropReply)
-        String prop = ""
-        parsedReply.results.bindings.each { b ->
-            prop = b?.prop.value
-        }
-        String verb = "citedata:"
-        verb += prop
-        return verb 
+      CiteUrn urn = new CiteUrn(urnStr)
+      CiteUrn baseUrn = new CiteUrn("urn:cite:${urn.getNs()}:${urn.getCollection()}.${urn.getObjectId()}")
+      String captionPropReply =  getSparqlReply("application/json", qg.getCaptionProp(baseUrn))
+      def slurper = new groovy.json.JsonSlurper()
+      def parsedReply = slurper.parseText(captionPropReply)
+      String prop = ""
+      parsedReply.results.bindings.each { b ->
+	prop = b?.prop.value
+      }
+      String verb = "citedata:"
+      verb += prop
+      return verb 
     }
 
     /**

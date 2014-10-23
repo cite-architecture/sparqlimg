@@ -18,23 +18,25 @@ class TestRequests extends GroovyTestCase {
     CiteUrn tstUrn = new CiteUrn(tstImg)
 
     void testCaption() {
-        CiteImage chsi = new CiteImage(serverUrl, iipsrv)
+      CiteImage chsi = new CiteImage(serverUrl, iipsrv)
+	
+      String expectedCaption = "Cologny, Fondation Martin Bodmer, Cod. Bodmer 8, folio 1 recto."
 
-        String expectedCaption = "Cologny, Fondation Martin Bodmer, Cod. Bodmer 8, folio 1 recto."
 
-
-
-        def root = new XmlParser().parseText(chsi.getCaptionReply(tstImg))
-        String actualCaption
-        System.err.println "img reply = " + root
-        root[img.reply][img.caption].each { c ->
-            System.err.println "c.text() = " + c.text()
-            actualCaption = c.text().replaceAll(/^[ ]+/,"")
-            actualCaption = actualCaption.replaceAll(/[ ]+$/,"")
-        }
-        assert actualCaption == expectedCaption
+      def root = new XmlParser().parseText(chsi.getCaptionReply(tstImg))
+      String actualCaption
+      System.err.println "img reply = " + root
+      root[img.reply][img.caption].each { c ->
+	System.err.println "c.text() = " + c.text()
+	actualCaption = c.text().replaceAll(/^[ ]+/,"")
+	actualCaption = actualCaption.replaceAll(/[ ]+$/,"")
+      }
+      assert actualCaption == expectedCaption
     }
 
+
+
+    /*
     void testRights() {
         CiteImage chsi = new CiteImage(serverUrl, iipsrv)
 
@@ -47,6 +49,6 @@ class TestRequests extends GroovyTestCase {
             actualRights = actualRights.replaceAll(/[ ]+$/,"")
         }
         assert actualRights == expectedRights
-    }
+	}*/
 
 }
